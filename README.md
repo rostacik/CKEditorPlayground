@@ -1,0 +1,2 @@
+# CKEditorPlayground
+sample CKEditor solution
