@@ -6,11 +6,13 @@
 <body>
   <div id="ckeditordiv"></div>
   <br />
-  <button id="btnStrong"><strong>bold</strong></button>
-  <button id="btnItalic"><em>italic</em></button>
-  <button id="btnUnderline"><u>underline</u></button>
-  <button id="btnSubscript">subscript</button>
-  <button id="btnSuperscript">superscript</button>
+  <div id="customButtons">
+    <button id="btnStrong"><strong>bold</strong></button>
+    <button id="btnItalic"><em>italic</em></button>
+    <button id="btnUnderline"><u>underline</u></button>
+    <button id="btnSubscript">subscript</button>
+    <button id="btnSuperscript">superscript</button>
+  </div>
   <button id="btnMaximize">maximize</button>
   <script src="//cdn.ckeditor.com/4.4.7/full/ckeditor.js"></script>
   <script src="//code.jquery.com/jquery-2.1.4.js"></script>
@@ -37,6 +39,11 @@
             hideUpperEditorBar(evt.editor);
           });
 
+          //handling switching of
+          editor.on('mode', function (evt) {
+            handleModeChange(evt);
+          });
+
           return editor;
         }
         else {
@@ -44,6 +51,30 @@
         }
       } else {
         new Error("no CKEDITOR object defined (not included ckeditor js file?)");
+      }
+    }
+
+    //disable all style edit buttons
+    function disableCustomButtons() {
+      $("#customButtons").find("button").prop("disabled", true);
+    }
+
+    //enable all style edit buttons
+    function enableCustomButtons() {
+      $("#customButtons").find("button").prop("disabled", false);
+    }
+
+    //handling setting the buttons on/off
+    function handleModeChange(evt) {
+      if ((evt) && (evt.editor)) {
+        //edit mode
+        if (evt.editor.mode === "wysiwyg") {
+          enableCustomButtons();
+        } else {
+          disableCustomButtons();
+        }
+      } else {
+        throw Error('no event object passed, or no editor object attached');
       }
     }
 
