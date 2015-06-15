@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>CKEditor playground</title>
+</head>
+<body>
+  <div id="ckeditordiv"></div>
+  <br />
+  <button id="btnStrong"><strong>bold</strong></button>
+  <button id="btnItalic"><em>italic</em></button>
+  <button id="btnUnderline"><u>underline</u></button>
+  <button id="btnSubscript">subscript</button>
+  <button id="btnSuperscript">superscript</button>
+  <button id="btnMaximize">maximize</button>
+  <script src="//cdn.ckeditor.com/4.4.7/full/ckeditor.js"></script>
+  <script src="//code.jquery.com/jquery-2.1.4.js"></script>
+  <script>
+    function setupMyCKEditor(elementName) {
+      if (CKEDITOR) {
+        if (elementName) {
+          var configObj = {
+            width: 600,
+            height: 200,
+            resize_enabled: false,
+            removePlugins: 'elementspath' //these two latest make the bottom row disappear - hacky, I know...
+          };
+
+          var editor = CKEDITOR.replace(elementName, configObj);
+
+          //clicking on editor toggle maximize button
+          editor.on('maximize', function (evt) {
+            handleMaxAndMin(evt);
+          });
+
+          //loaded occurs before anything is rendered - good 4 us
+          editor.on('loaded', function (evt) {
+            hideUpperEditorBar(evt.editor);
+          });
+
+          return editor;
+        }
+        else {
+          new Error("no element name specified");
+        }
+      } else {
+        new Error("no CKEDITOR object defined (not included ckeditor js file?)");
+      }
+    }
+
+    //logic what to do when maximize event happens
+    function handleMaxAndMin(evt) {
+      if (evt) {
+        if ((evt.data) && (evt.editor)) {
+          if (getStateOfMaxMin(evt.data)) {
+            showUpperEditorBar(evt.editor);
+          } else {
+            hideUpperEditorBar(evt.editor);
+          }
+        } else {
+          throw Error('no event data and/or editor object passed');
+        }
+      } else {
+        throw Error('no event object passed');
+      }
+    }
+
+    //get the state of window
+    function getStateOfMaxMin(evtData) {
+      if ((evtData) && (CKEDITOR)) {
+        if (evtData === CKEDITOR.TRISTATE_ON) {
+          return true; //maximized
+        } else {
+          return false; //minimized
+        }
+      } else {
+        throw new Error('no parameter specified or CKEDITOR not defined');
+      }
+    }
+
+    //show the upper editor bar
+    function showUpperEditorBar(editor) {
+      if (editor) {
+        $(getEditorUpperBar(editor)).show();
+      } else {
+        throw Error('no editor object passed as parameter');
+      }
+    }
+
+    //hide the upper bar over editor
+    function hideUpperEditorBar(editor) {
+      if (editor) {
+        $(getEditorUpperBar(editor)).hide();
+      } else {
+        throw Error('no editor object passed as parameter');
+      }
+    }
+
+    //get the id of upper bar from editor object - might change in future versions
+    function getEditorUpperBar(editor) {
+      if (editor) {
+        return ("#" + editor.id + "_top");
+      } else {
+        throw new Error('no editor object passed as parameter');
+      }
+    }
+
+    //bind buttons
+    function bindExternalButtons(editor) {
+      if (editor) {
+        $("#btnStrong").click(function () {
+          editor.execCommand("bold");
+        });
+
+        $("#btnItalic").click(function () {
+          editor.execCommand("italic");
+        });
+
+        $("#btnUnderline").click(function () {
+          editor.execCommand("underline");
+        });
+
+        $("#btnSuperscript").click(function () {
+          editor.execCommand("superscript");
+        });
+
+        $("#btnSubscript").click(function () {
+          editor.execCommand("subscript");
+        });
+
+        $("#btnMaximize").click(function () {
+          editor.execCommand("maximize");
+        });
+      } else {
+        throw new Error('no editor input object specified');
+      }
+    }
+
+    //let it buuuuuurn!
+    $(function () {
+      var editor = setupMyCKEditor('ckeditordiv');
+      bindExternalButtons(editor);
+    });
+  </script>
+</body>
+</html>
